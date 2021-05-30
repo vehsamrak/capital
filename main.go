@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/leekchan/accounting"
 	"github.com/olekukonko/tablewriter"
-	"os"
 )
 
 func main() {
