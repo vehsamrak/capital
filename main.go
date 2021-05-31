@@ -3,76 +3,146 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/leekchan/accounting"
 	"github.com/olekukonko/tablewriter"
 )
 
 func main() {
-	// configuration
-	currentCapital := 1300000.0
-	// currentCapital := 800000.0
-	months := 18
-	salary := 145000.0
-	monthlyInvestmentProfitPercent := 3.0
-	monthsToPremium := 6
-	premiumSalaryPercent := 100.0
-	monthsToSalaryGrow := 6
-	salaryGrowInPercents := 4.0
-	monthlySpendings := map[string]float64{
+	startTime := time.Date(2021, time.June, 1, 0, 0, 0, 0, time.Local)
+	// capital := 1300000.0 // 03.2019
+	capital := 1745000.0 // 05.2021
+	salary := 284000.0   // 05.2021
+	yearlyInvestmentProfitPercent := 10.0
+	salaryBonusMonths := map[time.Month]bool{time.April: true, time.November: true}
+	salaryBonusPercents := 10.0
+	salaryGrowMonths := map[time.Month]bool{time.April: true, time.November: true}
+	salaryGrowPercents := 4.0
+	vacationMonths := map[time.Month]bool{time.December: true}
+	vacationPrice := 200000.0
+
+	monthlySpendingList := map[string]float64{
 		"квартира":    45000,
-		"еда":         11000,
-		"развлечения": 20000,
+		"еда":         20000,
+		"развлечения": 30000,
+		"одежда":      5000,
 	}
 
-	// processing
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Месяц", "Заработано", "Премия", "Инвестиции", "Заработано всего", "Капитал"})
-
-	calculator := accounting.Accounting{Symbol: "руб.", Thousand: " ", Format: "%v %s"}
-
 	var monthlySpending float64
-	for _, spending := range monthlySpendings {
+	for _, spending := range monthlySpendingList {
 		monthlySpending += spending
 	}
 
-	fmt.Printf("Начальный капитал: %s\n", calculator.FormatMoney(currentCapital))
+	goal := countGoal(monthlySpending, yearlyInvestmentProfitPercent)
+
+	// processing
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Дата", "Заработано", "Премия", "Инвестиции", "Заработано всего", "Капитал", "Отпуск"})
+
+	calculator := accounting.Accounting{Symbol: "₽", Thousand: " ", Format: "%v %s"}
+
+	fmt.Printf("Дата начала: %s\n", startTime.Format("2 January 2006"))
+	fmt.Printf("Начальный капитал: %s\n", calculator.FormatMoney(capital))
 	fmt.Printf("Начальная зарплата: %s\n", calculator.FormatMoney(salary))
+	fmt.Printf(
+		"Цель: %s (%s в месяц)\n",
+		calculator.FormatMoney(goal),
+		calculator.FormatMoney(goal*yearlyInvestmentProfitPercent/10/100),
+	)
 	fmt.Printf("Ежемесячные траты: %s\n", calculator.FormatMoney(monthlySpending))
 
-	var earnedCapital float64
-	for i := 0; months > i; i++ {
+	var overallProfit float64
+	var currentTime time.Time
+	previousYear := startTime.Year()
+	monthsToGoalCount := 0
+	for ; capital < goal; monthsToGoalCount++ {
+		currentTime = startTime.AddDate(0, monthsToGoalCount, 0)
+		profit := salary - monthlySpending
+		investmentProfit := capital * (yearlyInvestmentProfitPercent / 10 / 100)
+		overallProfit += profit + investmentProfit
+
+		if previousYear != currentTime.Year() {
+			table.Append([]string{currentTime.Format("2006")})
+		}
+
+		previousYear = currentTime.Year()
+
+		capital += profit + investmentProfit
+
 		var row []string
-		var earned float64
-		earned += salary - monthlySpending
-
-		investmentProfit := (earnedCapital + currentCapital) * (monthlyInvestmentProfitPercent / 100)
-
 		row = append(
 			row,
-			fmt.Sprintf("%d", i+1),
-			calculator.FormatMoney(earned),
+			currentTime.Format("January"),
+			calculator.FormatMoney(profit),
 			"",
 			calculator.FormatMoney(investmentProfit),
-			calculator.FormatMoney(earned+investmentProfit+earnedCapital),
-			calculator.FormatMoney(earnedCapital+investmentProfit+currentCapital),
+			calculator.FormatMoney(overallProfit),
+			calculator.FormatMoney(capital),
+			"",
 		)
 
-		if (i+1)%(monthsToPremium) == 0 {
-			var premium float64
-			premium = salary * (premiumSalaryPercent / 100)
-			earned += premium
-
-			row[2] = calculator.FormatMoney(premium)
+		// vacation
+		if _, ok := vacationMonths[currentTime.Month()]; ok {
+			profit -= vacationPrice
+			overallProfit -= vacationPrice
+			row[1] = calculator.FormatMoney(profit)
+			row[4] = calculator.FormatMoney(overallProfit)
+			if row[6] != "" {
+				row[6] += " | "
+			}
+			row[6] = fmt.Sprintf("Отпуск: %s", calculator.FormatMoney(vacationPrice))
 		}
-		if (i+1)%(monthsToSalaryGrow) == 0 {
-			salary *= (salaryGrowInPercents / 100) + 1
+
+		// salary growth
+		if _, ok := salaryGrowMonths[currentTime.Month()]; ok {
+			salaryGrow := salary * salaryGrowPercents / 100
+			salary += salaryGrow
+			if row[6] != "" {
+				row[6] += " | "
+			}
+			row[6] = fmt.Sprintf(
+				"Повышение зарплаты: %s (+%s)",
+				calculator.FormatMoney(salary),
+				calculator.FormatMoney(salaryGrow),
+			)
 		}
 
-		earnedCapital += earned + investmentProfit
+		// salary bonus
+		if _, ok := salaryBonusMonths[currentTime.Month()]; ok {
+			bonus := salary * salaryBonusPercents / 100 * 6
+			profit += bonus
+			overallProfit += bonus
+			row[1] = calculator.FormatMoney(profit)
+			row[4] = calculator.FormatMoney(overallProfit)
+			if row[6] != "" {
+				row[6] += " | "
+			}
+			row[6] += fmt.Sprintf("Премия: %s", calculator.FormatMoney(bonus))
+		}
 
 		table.Append(row)
 	}
 
+	yearsToGoal, monthsToGoal := countTimeToGoal(monthsToGoalCount)
+	fmt.Printf("До цели: %d лет %d месяцев\n", yearsToGoal, monthsToGoal)
+
 	table.Render()
+}
+
+// count goal in terms of all spending = passive income
+func countGoal(monthlySpending float64, yearlyInvestmentProfitPercent float64) float64 {
+	return monthlySpending / (yearlyInvestmentProfitPercent / 10 / 100)
+}
+
+func countTimeToGoal(monthsToGoal int) (int, int) {
+	if monthsToGoal == 0 {
+		return 0, 0
+	}
+
+	if monthsToGoal <= 12 {
+		return 0, monthsToGoal
+	}
+
+	return monthsToGoal / 12, monthsToGoal % 12
 }
