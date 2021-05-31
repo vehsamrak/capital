@@ -21,6 +21,7 @@ func main() {
 	salaryGrowPercents := 4.0
 	vacationMonths := map[time.Month]bool{time.December: true}
 	vacationPrice := 200000.0
+	goalAddition := 35000000.0
 
 	monthlySpendingList := map[string]float64{
 		"квартира":    45000,
@@ -56,7 +57,7 @@ func main() {
 	var currentTime time.Time
 	previousYear := startTime.Year()
 	monthsToGoalCount := 0
-	for ; capital < goal; monthsToGoalCount++ {
+	for ; capital < goal+goalAddition; monthsToGoalCount++ {
 		currentTime = startTime.AddDate(0, monthsToGoalCount, 0)
 		profit := salary - monthlySpending
 		investmentProfit := capital * (yearlyInvestmentProfitPercent / 10 / 100)
