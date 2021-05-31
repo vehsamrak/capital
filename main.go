@@ -114,11 +114,8 @@ func main() {
 			profit += bonus
 			overallProfit += bonus
 			row[1] = calculator.FormatMoney(profit)
+			row[2] += calculator.FormatMoney(bonus)
 			row[4] = calculator.FormatMoney(overallProfit)
-			if row[6] != "" {
-				row[6] += " | "
-			}
-			row[6] += fmt.Sprintf("Премия: %s", calculator.FormatMoney(bonus))
 		}
 
 		table.Append(row)
