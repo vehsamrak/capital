@@ -18,16 +18,18 @@ func main() {
 	salaryBonusMonths := map[time.Month]bool{time.April: true, time.November: true}
 	salaryBonusPercents := 10.0
 	salaryGrowMonths := map[time.Month]bool{time.April: true, time.November: true}
-	salaryGrowPercents := 4.0
+	salaryGrowPercents := 5.0
 	vacationMonths := map[time.Month]bool{time.December: true}
-	vacationPrice := 200000.0
-	goalAddition := 35000000.0
+	vacationPrice := 300000.0
+	goalAddition := 0.0
+	goalMonthlyAddition := 100000.0
 
 	monthlySpendingList := map[string]float64{
 		"квартира":    45000,
 		"еда":         20000,
 		"развлечения": 30000,
 		"одежда":      5000,
+		"путешествия": 30000,
 	}
 
 	var monthlySpending float64
@@ -35,7 +37,7 @@ func main() {
 		monthlySpending += spending
 	}
 
-	goal := countGoal(monthlySpending, yearlyInvestmentProfitPercent)
+	goal := countGoal(goalAddition, goalMonthlyAddition, monthlySpending, yearlyInvestmentProfitPercent)
 
 	// processing
 	table := tablewriter.NewWriter(os.Stdout)
@@ -57,7 +59,7 @@ func main() {
 	var currentTime time.Time
 	previousYear := startTime.Year()
 	monthsToGoalCount := 0
-	for ; capital < goal+goalAddition; monthsToGoalCount++ {
+	for ; capital < goal; monthsToGoalCount++ {
 		currentTime = startTime.AddDate(0, monthsToGoalCount, 0)
 		profit := salary - monthlySpending
 		investmentProfit := capital * (yearlyInvestmentProfitPercent / 10 / 100)
@@ -87,8 +89,10 @@ func main() {
 		if _, ok := vacationMonths[currentTime.Month()]; ok {
 			profit -= vacationPrice
 			overallProfit -= vacationPrice
+			capital -= vacationPrice
 			row[1] = calculator.FormatMoney(profit)
 			row[4] = calculator.FormatMoney(overallProfit)
+			row[5] = calculator.FormatMoney(capital)
 			if row[6] != "" {
 				row[6] += " | "
 			}
@@ -129,8 +133,14 @@ func main() {
 }
 
 // count goal in terms of all spending = passive income
-func countGoal(monthlySpending float64, yearlyInvestmentProfitPercent float64) float64 {
-	return monthlySpending / (yearlyInvestmentProfitPercent / 10 / 100)
+func countGoal(
+	goalAddition float64,
+	goalMonthlyAddition float64,
+	monthlySpending float64,
+	yearlyInvestmentProfitPercent float64,
+) float64 {
+	return goalAddition +
+		((monthlySpending + goalMonthlyAddition) / (yearlyInvestmentProfitPercent / 10 / 100))
 }
 
 func countTimeToGoal(monthsToGoal int) (int, int) {
