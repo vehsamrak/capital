@@ -21,7 +21,7 @@ func main() {
 	salaryGrowPercents := 5.0
 	vacationMonths := map[time.Month]bool{time.December: true}
 	vacationPrice := 300000.0
-	goalAddition := 0.0
+	goalAddition := 35000000.0
 	goalMonthlyAddition := 100000.0
 
 	monthlySpendingList := map[string]float64{
