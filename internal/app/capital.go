@@ -1,15 +1,13 @@
-package main
+package app
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/leekchan/accounting"
-	"github.com/olekukonko/tablewriter"
 )
 
-func main() {
+func CalculateCapital() *CapitalResult {
 	startTime := time.Date(2021, time.June, 1, 0, 0, 0, 0, time.Local)
 	// capital := 1300000.0 // 03.2019
 	capital := 1745000.0 // 05.2021
@@ -39,9 +37,18 @@ func main() {
 
 	goal := countGoal(goalAddition, goalMonthlyAddition, monthlySpending, yearlyInvestmentProfitPercent)
 
-	// processing
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Дата", "Заработано", "Премия", "Инвестиции", "Заработано всего", "Капитал", "Отпуск"})
+	capitalResult := NewCapitalResult()
+	capitalResult.Append(
+		[]string{
+			"Дата",
+			"Заработано",
+			"Премия",
+			"Инвестиции",
+			"Заработано всего",
+			"Капитал",
+			"Отпуск",
+		},
+	)
 
 	calculator := accounting.Accounting{Symbol: "₽", Thousand: " ", Format: "%v %s"}
 
@@ -66,7 +73,7 @@ func main() {
 		overallProfit += profit + investmentProfit
 
 		if previousYear != currentTime.Year() {
-			table.Append([]string{currentTime.Format("2006")})
+			capitalResult.Append([]string{currentTime.Format("2006")})
 		}
 
 		previousYear = currentTime.Year()
@@ -123,13 +130,13 @@ func main() {
 			row[4] = calculator.FormatMoney(overallProfit)
 		}
 
-		table.Append(row)
+		capitalResult.Append(row)
 	}
 
 	yearsToGoal, monthsToGoal := countTimeToGoal(monthsToGoalCount)
 	fmt.Printf("До цели: %d лет %d месяцев\n", yearsToGoal, monthsToGoal)
 
-	table.Render()
+	return capitalResult
 }
 
 // count goal in terms of all spending = passive income
