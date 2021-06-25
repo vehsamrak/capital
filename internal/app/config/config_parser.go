@@ -1,4 +1,4 @@
-package app
+package config
 
 import (
 	"time"
@@ -7,12 +7,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type ConfigParser struct {
+type Parser struct {
 }
 
-func (c *ConfigParser) Parse() (*Config, error) {
+func (*Parser) Parse() (*Config, error) {
 	config := &Config{}
-	config.StartTimeCallback = func(date string) {
+	config.startTimeCallback = func(date string) {
 		var err error
 		config.StartTime, err = time.Parse("2006-01-02", date)
 		if err != nil {

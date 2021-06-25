@@ -1,9 +1,9 @@
-package app
+package config
 
 import "time"
 
 type Config struct {
-	StartTimeCallback             func(string) `long:"start" description:"Дата начала планирования YYYY-MM-DD"`
+	startTimeCallback             func(string) `long:"start" description:"Дата начала планирования YYYY-MM-DD"`
 	StartTime                     time.Time
 	InitialCapital                int   `long:"capital" default:"0" description:"Капитал на начало планирования"`
 	InitialSalary                 int   `long:"salary" default:"15000" description:"Зарплата в месяц на начало планирования"`
