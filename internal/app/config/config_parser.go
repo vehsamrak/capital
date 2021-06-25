@@ -12,7 +12,7 @@ type Parser struct {
 
 func (*Parser) Parse() (*Config, error) {
 	config := &Config{}
-	config.startTimeCallback = func(date string) {
+	config.StartTimeCallback = func(date string) {
 		var err error
 		config.StartTime, err = time.Parse("2006-01-02", date)
 		if err != nil {

@@ -17,8 +17,6 @@ type Console struct {
 func (c Console) Render(capitalResult *app.CapitalResult) (render string, err error) {
 	table := tablewriter.NewWriter(os.Stdout)
 
-	printStatistics(capitalResult)
-
 	for i, row := range capitalResult.Table {
 		if i == 0 {
 			table.SetHeader(capitalResult.Table[0])
@@ -30,31 +28,40 @@ func (c Console) Render(capitalResult *app.CapitalResult) (render string, err er
 
 	table.Render()
 
+	printStatistics(capitalResult)
+
 	return
 }
 
 func printStatistics(capitalResult *app.CapitalResult) {
 	calculator := accounting.Accounting{Symbol: "₽", Thousand: " ", Format: "%v %s"}
 
+	fmt.Printf("\n")
+	fmt.Printf("Цель: %s\n", calculator.FormatMoney(capitalResult.Goal))
+	fmt.Printf("Пассивный доход в месяц: %s\n", calculator.FormatMoney(capitalResult.MonthlyGoal))
 	fmt.Printf("Дата начала: %s\n", capitalResult.InitialDate.Format("2.01.2006"))
-	yearsToGoal, monthsToGoal, _, _, _, _ := countTimeDiff(capitalResult.InitialDate, capitalResult.GoalDate)
 
+	yearsToGoal, monthsToGoal, _, _, _, _ := countTimeDiff(capitalResult.InitialDate, capitalResult.GoalDate)
 	fmt.Printf(
 		"Дата достижения цели: %s (%d лет %d мес)\n",
-		capitalResult.GoalDate.Format("2.01.2006"),
+		capitalResult.GoalDate.Format("January 2006"),
 		yearsToGoal,
 		monthsToGoal,
-	)
-	fmt.Printf(
-		"Цель: %s (%s в месяц)\n",
-		calculator.FormatMoney(capitalResult.Goal),
-		calculator.FormatMoney(capitalResult.MonthlyGoal),
 	)
 	fmt.Printf("Начальный капитал: %s\n", calculator.FormatMoney(capitalResult.InitialCapital))
 	fmt.Printf("Капитал на конец периода: %s\n", calculator.FormatMoney(capitalResult.ResultCapital))
 	fmt.Printf("Начальная зарплата: %s\n", calculator.FormatMoney(capitalResult.InitialSalary))
 	fmt.Printf("Зарплата на конец периода: %s\n", calculator.FormatMoney(capitalResult.ResultSalary))
-	fmt.Printf("Ежемесячные траты: %s\n", calculator.FormatMoney(capitalResult.MonthlySpending))
+	fmt.Printf("Ежемесячные траты:\n")
+
+	var spendingSum int
+	for spendingName, spendingValue := range capitalResult.MonthlySpending {
+		spendingSum += spendingValue
+		fmt.Printf("\t%s: %s\n", spendingName, calculator.FormatMoney(spendingValue))
+	}
+
+	fmt.Printf("\tИтого: %s\n", calculator.FormatMoney(spendingSum))
+
 }
 
 func countTimeDiff(timeFrom, timeTo time.Time) (year, month, day, hour, min, sec int) {

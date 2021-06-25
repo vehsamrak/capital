@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/vehsamrak/capital/internal/app"
+	"github.com/vehsamrak/capital/internal/app/config"
 	"github.com/vehsamrak/capital/internal/logger"
 	"github.com/vehsamrak/capital/internal/renderer"
 )
@@ -15,7 +16,13 @@ func main() {
 
 	log.Info("Capital app started")
 
-	capitalResult := app.CalculateCapital()
+	configParser := config.Parser{}
+	capitalConfig, err := configParser.Parse()
+	if err != nil {
+		return
+	}
+
+	capitalResult := app.CalculateCapital(capitalConfig)
 	consoleRenderer := renderer.Console{}
 
 	render, err := consoleRenderer.Render(capitalResult)

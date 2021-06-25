@@ -3,23 +3,23 @@ package app
 import "time"
 
 type CapitalResult struct {
-	InitialDate     time.Time  `json:"startDate"`
-	InitialCapital  int        `json:"initialCapital"`
-	ResultCapital   int        `json:"resultCapital"`
-	InitialSalary   int        `json:"initialSalary"`
-	ResultSalary    int        `json:"resultSalary"`
-	Goal            int        `json:"goal"`
-	MonthlyGoal     int        `json:"monthlyGoal"`
-	GoalDate        time.Time  `json:"goalDate"`
-	MonthlySpending int        `json:"monthlySpending"`
-	Table           [][]string `json:"table"`
+	InitialDate     time.Time      `json:"startDate"`
+	InitialCapital  int            `json:"initialCapital"`
+	ResultCapital   int            `json:"resultCapital"`
+	InitialSalary   int            `json:"initialSalary"`
+	ResultSalary    int            `json:"resultSalary"`
+	Goal            int            `json:"goal"`
+	MonthlyGoal     int            `json:"monthlyGoal"`
+	GoalDate        time.Time      `json:"goalDate"`
+	MonthlySpending map[string]int `json:"monthlySpending"`
+	Table           [][]string     `json:"table"`
 }
 
 func NewCapitalResult(
 	startTime time.Time,
 	capital int,
 	salary int,
-	monthlySpending int,
+	monthlySpending map[string]int,
 	goal int,
 	yearlyInvestmentProfitPercent int,
 ) *CapitalResult {
