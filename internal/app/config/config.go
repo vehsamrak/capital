@@ -17,4 +17,5 @@ type Config struct {
 	GoalAddition                  int            `long:"goal-addition" default:"0" description:"Дополнительная цель в денежном эквиваленте"`
 	GoalMonthlyAddition           int            `long:"goal-monthly-addition" default:"0" description:"Дополнительная ежемесячная цель в денежном эквиваленте"`
 	MonthlySpending               map[string]int `long:"monthly-spending" default:"еда:10000" description:"Месячные траты (можно задать несколько, еще одним параметром)"`
+	Verbose                       bool           `long:"verbose" description:"Выводить отладочную информацию"`
 }

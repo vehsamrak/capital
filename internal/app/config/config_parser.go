@@ -10,7 +10,7 @@ import (
 type Parser struct {
 }
 
-func (*Parser) Parse() (*Config, error) {
+func (*Parser) Parse() (*Config, bool, error) {
 	config := &Config{}
 	config.StartTimeCallback = func(date string) {
 		var err error
@@ -28,12 +28,20 @@ func (*Parser) Parse() (*Config, error) {
 
 	_, err := flags.Parse(config)
 	if err != nil {
-		return nil, err
+		switch err.(type) {
+		case *flags.Error:
+			isHelpCommandCalled := err.(*flags.Error).Type == flags.ErrHelp
+			if isHelpCommandCalled {
+				return nil, false, nil
+			}
+		default:
+			return nil, false, err
+		}
 	}
 
 	if config.StartTime.IsZero() {
 		config.StartTime = time.Now()
 	}
 
-	return config, nil
+	return config, config.Verbose, nil
 }

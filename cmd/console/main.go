@@ -14,13 +14,22 @@ import (
 func main() {
 	log.SetFormatter(&logger.TextFormatter{})
 
-	log.Info("Capital app started")
-
 	configParser := config.Parser{}
-	capitalConfig, err := configParser.Parse()
+	capitalConfig, isVerbose, err := configParser.Parse()
 	if err != nil {
+		log.WithError(err).Error("Capital app error occurred")
 		return
 	}
+
+	if isVerbose {
+		log.SetLevel(log.DebugLevel)
+	}
+
+	if capitalConfig == nil {
+		return
+	}
+
+	log.Debug("Capital app started")
 
 	capitalResult := app.CalculateCapital(capitalConfig)
 	consoleRenderer := renderer.Console{}
@@ -33,5 +42,5 @@ func main() {
 
 	fmt.Printf("%s\n", render)
 
-	log.Info("Capital app finished")
+	log.Debug("Capital app finished")
 }
