@@ -7,8 +7,8 @@ type Config struct {
 	StartTimeCallback             func(string)   `long:"start" description:"Дата начала планирования YYYY-MM-DD"`
 	InitialCapital                int            `long:"capital" default:"0" description:"Капитал на начало планирования"`
 	InitialSalary                 int            `long:"salary" default:"15000" description:"Зарплата в месяц на начало планирования"`
-	SalaryBonusPercent            int            `long:"salary-bonus-percent" default:"11" description:"Размер премии в процентах от зарплаты"`
-	SalaryBonusMonths             []time.Month   `long:"salary-bonus-month" default:"2" description:"Месяц в который выплачивается премия (можно задать несколько, еще одним параметром)"`
+	SalaryBonusPercent            int            `long:"salary-bonus-percent" default:"0" description:"Размер премии в процентах от зарплаты"`
+	SalaryBonusMonths             []time.Month   `long:"salary-bonus-month" default:"0" description:"Месяц в который выплачивается премия (можно задать несколько, еще одним параметром)"`
 	SalaryGrowthPercent           int            `long:"salary-growth-percent" default:"10" description:"Процент повышения зарплаты"`
 	SalaryGrowthMonths            []time.Month   `long:"salary-growth-month" default:"1" description:"Месяц в который повышается зарплата (можно задать несколько, еще одним параметром)"`
 	VacationMonths                []time.Month   `long:"vacation-month" default:"12" description:"Месяц в который планируется отпуск (можно задать несколько, еще одним параметром)"`

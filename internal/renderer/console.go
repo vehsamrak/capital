@@ -62,6 +62,9 @@ func printStatistics(capitalResult *app.CapitalResult) {
 
 	fmt.Printf("\tИтого: %s\n", calculator.FormatMoney(spendingSum))
 
+	fmt.Printf("\n\n--------------------\nДля справки запустите приложение с флагом --help.\n")
+	fmt.Printf("Petr Karmashev, 2021 | TLG: @vehsamrak | https://github.com/vehsamrak/capital\n")
+
 }
 
 func countTimeDiff(timeFrom, timeTo time.Time) (year, month, day, hour, min, sec int) {
