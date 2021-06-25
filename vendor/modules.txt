@@ -1,5 +1,8 @@
 # github.com/cockroachdb/apd v1.1.0
 github.com/cockroachdb/apd
+# github.com/jessevdk/go-flags v1.5.0
+## explicit
+github.com/jessevdk/go-flags
 # github.com/leekchan/accounting v1.0.0
 ## explicit
 github.com/leekchan/accounting
@@ -15,6 +18,9 @@ github.com/shopspring/decimal
 # github.com/sirupsen/logrus v1.8.1
 ## explicit
 github.com/sirupsen/logrus
-# golang.org/x/sys v0.0.0-20191026070338-33540a1f6037
+# github.com/stretchr/testify v1.5.1
+## explicit
+# golang.org/x/sys v0.0.0-20210320140829-1e4c9ba3b0c4
+golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
