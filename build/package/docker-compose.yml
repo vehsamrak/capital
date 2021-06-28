@@ -40,6 +40,9 @@ services:
     - ./migration-entrypoint-dev.sh:/project/migration-entrypoint-dev.sh
     - ../../tools:/project/tools
     - /etc/localtime:/etc/localtime:ro
+    environment:
+      POSTGRES_USER: capitalUser
+      POSTGRES_PASSWORD: hARdAYTEReIsUlANTanEOLIB
     entrypoint: /project/migration-entrypoint-dev.sh
     networks:
     - capital
