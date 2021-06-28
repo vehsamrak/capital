@@ -1,0 +1,51 @@
+version: '3'
+services:
+  application:
+    container_name: capital_backend
+    restart: always
+    depends_on:
+    - database
+    build: .
+    volumes:
+    - ../..:/go/src/github.com/vehsamrak/project
+    - /etc/localtime:/etc/localtime:ro
+    entrypoint: /go/src/github.com/vehsamrak/project/build/package/entrypoint-dev.sh
+    networks:
+    - capital
+
+  database:
+    image: postgres:11
+    container_name: capital_database
+    restart: always
+    volumes:
+    - capital_database_data:/var/lib/postgresql/data/pgdata
+    - /etc/localtime:/etc/localtime:ro
+    environment:
+      POSTGRES_USER: capitalUser
+      POSTGRES_PASSWORD: hARdAYTEReIsUlANTanEOLIB
+      POSTGRES_DB: capital
+      PGDATA: /var/lib/postgresql/data/pgdata
+    networks:
+    - capital
+    ports:
+    - 7642:5432
+
+  database_migration:
+    image: postgres:11
+    container_name: capital_database_migration
+    restart: "no"
+    depends_on:
+    - database
+    volumes:
+    - ./migration-entrypoint-dev.sh:/project/migration-entrypoint-dev.sh
+    - ../../tools:/project/tools
+    - /etc/localtime:/etc/localtime:ro
+    entrypoint: /project/migration-entrypoint-dev.sh
+    networks:
+    - capital
+
+volumes:
+  capital_database_data:
+
+networks:
+  capital:
