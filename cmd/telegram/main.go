@@ -71,7 +71,7 @@ func main() {
 		_, err = bot.Send(output.GenerateChattable())
 		if err != nil {
 			// TODO[petr]: handle error
-			log.WithError(err).Warning("Output error occured")
+			log.WithError(err).Warning("Output error occurred")
 			return
 		}
 	}
