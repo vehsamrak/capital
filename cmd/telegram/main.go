@@ -12,10 +12,18 @@ import (
 	"github.com/vehsamrak/capital/internal/telegram"
 )
 
+const (
+	envTelegramToken = "TELEGRAM_APPLICATION_TOKEN"
+)
+
 func main() {
 	log.SetFormatter(&logger.TextFormatter{})
 
-	token := os.Getenv("TELEGRAM_APPLICATION_TOKEN")
+	token := os.Getenv(envTelegramToken)
+	if token == "" {
+		log.Errorf("Token is empty. %s environment variable must be specified", envTelegramToken)
+		os.Exit(1)
+	}
 
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
