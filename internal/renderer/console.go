@@ -38,7 +38,7 @@ func printStatistics(capitalResult *app.CapitalResult) {
 
 	fmt.Printf("\n")
 	fmt.Printf("Цель: %s\n", calculator.FormatMoney(capitalResult.Goal))
-	fmt.Printf("Пассивный доход в месяц: %s\n", calculator.FormatMoney(capitalResult.MonthlyGoal))
+	fmt.Printf("Целевой пассивный доход в месяц: %s\n", calculator.FormatMoney(capitalResult.MonthlyGoal))
 	fmt.Printf("Дата начала: %s\n", capitalResult.InitialDate.Format("2.01.2006"))
 
 	yearsToGoal, monthsToGoal, _, _, _, _ := countTimeDiff(capitalResult.InitialDate, capitalResult.GoalDate)
