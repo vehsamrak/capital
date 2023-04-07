@@ -10,8 +10,6 @@ type Json struct {
 }
 
 func (c Json) Render(capitalResult *app.CapitalResult) (render string, err error) {
-	// capitalResultTable := capitalResult.Table
-
 	capitalResultJson, err := json.Marshal(capitalResult)
 	if err != nil {
 		return
